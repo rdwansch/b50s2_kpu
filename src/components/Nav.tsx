@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
+import { NavLink } from 'react-router-dom';
 
 export default function Nav() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+
+  const navs = [
+    { link: '/partai', text: 'Partai' },
+    { link: '/paslon', text: 'Paslon' },
+    { link: '/vote', text: 'Voting' },
+  ];
 
   return (
     <>
@@ -14,20 +21,26 @@ export default function Nav() {
             <div className="text-white bg-red-500 p-2 w-fit rounded-full">DU</div>
             <h1 className="text-white font-bold uppercase">Pemilu DumbWays.ID</h1>
           </div>
-          <div className="flex gap-2 items-center">
-            <a href="" className="text-white">
-              Partai
-            </a>
-            <span className="w-0.5 h-5 bg-white"></span>
-            <a href="" className="text-white">
-              Paslon
-            </a>
-            <span className="w-0.5 h-5 bg-white"></span>
-            <a href="" className="text-white">
-              Voting
-            </a>
+          <div className="flex gap-5 items-center">
+            {navs.map(item => (
+              <NavLink
+                to={item.link}
+                className={({ isActive }) =>
+                  [
+                    isActive
+                      ? 'text-white after:w-3/4 after:absolute after:-bottom-1 after:left-0 after:right-0 relative after:rounded-full after:h-0.5 after:bg-gray-200 '
+                      : 'text-gray-400',
+                    'flex items-center gap-2',
+                  ].join(' ')
+                }
+              >
+                {item.text}
+                {/* {idx !== 2 && <span className="w-0.5 h-5 bg-white"></span>} */}
+              </NavLink>
+            ))}
+
             <div
-              className="bg-gray-300 px-4 py-1 flex items-center justify-center rounded-lg font-bold cursor-pointer"
+              className="bg-gray-300 px-4 py-1 flex items-center justify-center rounded-lg font-bold cursor-pointer ml-5"
               onClick={() => setShowLoginModal(prev => !prev)}
             >
               Login
