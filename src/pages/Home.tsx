@@ -38,7 +38,7 @@ export default function Home() {
       <Jumbotron />
 
       <div className="grid grid-cols-3 gap-6 my-container mt-20">
-        {data.map((post, idx) => (idx == 0 ? <BigCard /> : <SmallCard />))}
+        {data.map((post, idx) => (idx == 0 ? <BigCard key={idx} /> : <SmallCard key={idx + 1} />))}
       </div>
 
       <div className="bg-white w-full py-20 mt-20">

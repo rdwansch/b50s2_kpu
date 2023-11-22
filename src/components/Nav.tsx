@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
 import { NavLink } from 'react-router-dom';
+import { UserCtx } from '../libs/Context';
 
 export default function Nav() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [state] = useContext(UserCtx);
 
   const navs = [
     { link: '/partai', text: 'Partai' },
@@ -24,6 +26,7 @@ export default function Nav() {
           <div className="flex gap-5 items-center">
             {navs.map(item => (
               <NavLink
+                key={item.link}
                 to={item.link}
                 className={({ isActive }) =>
                   [
@@ -39,12 +42,18 @@ export default function Nav() {
               </NavLink>
             ))}
 
-            <div
-              className="bg-gray-300 px-4 py-1 flex items-center justify-center rounded-lg font-bold cursor-pointer ml-5"
-              onClick={() => setShowLoginModal(prev => !prev)}
-            >
-              Login
-            </div>
+            {state.isLogin ? (
+              <div className="bg-gray-300 px-4 py-1 flex items-center justify-center rounded-lg font-bold cursor-pointer ml-5">
+                {state.user.username.substring(0, 1)}
+              </div>
+            ) : (
+              <div
+                className="bg-gray-300 px-4 py-1 flex items-center justify-center rounded-lg font-bold cursor-pointer ml-5"
+                onClick={() => setShowLoginModal(prev => !prev)}
+              >
+                Login
+              </div>
+            )}
           </div>
         </nav>
       </div>
