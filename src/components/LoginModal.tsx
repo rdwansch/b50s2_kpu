@@ -1,5 +1,7 @@
-import { Dispatch, FormEvent, useContext } from 'react';
+import { Dispatch, FormEvent, useContext, useState } from 'react';
 import { UserCtx } from '../libs/Context';
+import { jwtDecode } from 'jwt-decode';
+import { User } from '../types/User';
 
 interface Props {
   isOpen: boolean;
@@ -8,23 +10,42 @@ interface Props {
 }
 
 export default function LoginModal({ isOpen, setIsOpen, setShowRegisterModal }: Props) {
-  const [state, dispatch] = useContext(UserCtx);
+  const [, dispatch] = useContext(UserCtx);
+  const [user, setUser] = useState({
+    email: '',
+    password: '',
+  });
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const res = await fetch('http://localhost:5000/api/v1/login', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(user),
+    });
+
+    const data = await res.json();
+    const decoded = jwtDecode<{ User: User; iat: number; exp: number }>(data);
 
     dispatch({
       type: 'USER_LOGIN',
       payload: {
-        isLogin: true,
         user: {
-          username: 'Ridhwan',
+          fullname: decoded.User.fullname,
+          id: decoded.User.id,
+          role: decoded.User.role,
         },
+        token: data,
+        isLogin: true,
       },
     });
-  };
 
-  console.log(state);
+    setIsOpen(false);
+  };
 
   return (
     <>
@@ -40,13 +61,14 @@ export default function LoginModal({ isOpen, setIsOpen, setShowRegisterModal }: 
         <form onSubmit={handleSubmit}>
           <h1 className="text-3xl font-bold text-center">LOGIN</h1>
           <div className="flex flex-col max-w-sm mx-auto mt-3">
-            <label htmlFor="username" className="text-lg">
-              Username
+            <label htmlFor="email" className="text-lg">
+              Email
             </label>
             <input
-              type="text"
-              name="username"
-              id="username"
+              type="email"
+              name="email"
+              id="email"
+              onChange={e => setUser({ ...user, email: e.target.value })}
               className="rounded-lg px-3 py-1 border-2 focus:outline-none focus:shadow focus:border-gray-300 transition"
             />
           </div>
@@ -58,6 +80,7 @@ export default function LoginModal({ isOpen, setIsOpen, setShowRegisterModal }: 
               type="password"
               name="password"
               id="password"
+              onChange={e => setUser({ ...user, password: e.target.value })}
               className="rounded-lg px-3 py-1 border-2 focus:outline-none focus:shadow focus:border-gray-300 transition"
             />
           </div>

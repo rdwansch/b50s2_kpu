@@ -9,18 +9,13 @@ import Partai from './pages/Partai';
 import AddPartai from './pages/AddPartai';
 import AddPaslon from './pages/AddPaslon';
 
-const auth = {
-  isLogin: true,
-  role: 'admin',
-};
-
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/detail" element={<Detail />} />
 
-      <Route element={<PrivateRoute auth={auth} />}>
+      <Route element={<PrivateRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/paslon" element={<Paslon />} />
         <Route path="/paslon/add" element={<AddPaslon />} />

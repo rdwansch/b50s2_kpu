@@ -44,7 +44,7 @@ export default function Nav() {
 
             {state.isLogin ? (
               <div className="bg-gray-300 px-4 py-1 flex items-center justify-center rounded-lg font-bold cursor-pointer ml-5">
-                {state.user.username.substring(0, 1)}
+                {state.user.fullname.substring(0, 1)}
               </div>
             ) : (
               <div

@@ -1,28 +1,39 @@
 import { Dispatch, ReactNode, createContext, useReducer } from 'react';
+import { User } from '../types/User';
 
 interface InitialState {
   isLogin: boolean;
-  user: {
-    username: string;
-  };
+  user: User;
+  token: string;
 }
 
 interface Action {
   type: 'USER_LOGIN' | 'USER_LOGOUT';
-  payload: InitialState;
+  payload?: InitialState;
 }
 
 const initialState: InitialState = {
   isLogin: false,
   user: {
-    username: '',
+    fullname: '',
+    id: 0,
+    role: '',
   },
+  token: '',
 };
 
 const reducer = (state: InitialState, action: Action): InitialState => {
   switch (action.type) {
     case 'USER_LOGIN':
-      return { ...state, ...action.payload };
+      if (action.payload) {
+        localStorage.setItem('token', action.payload.token);
+        return { ...state, ...action.payload };
+      }
+      return initialState;
+    case 'USER_LOGOUT': {
+      localStorage.removeItem('token');
+      return initialState;
+    }
     default:
       return { ...state };
   }
