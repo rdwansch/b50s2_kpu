@@ -15,9 +15,8 @@ interface Action {
 const initialState: InitialState = {
   isLogin: false,
   user: {
-    fullname: '',
+    username: '',
     id: 0,
-    role: '',
   },
   token: '',
 };

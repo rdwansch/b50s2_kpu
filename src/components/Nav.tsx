@@ -7,13 +7,20 @@ import { UserCtx } from '../libs/Context';
 export default function Nav() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [state] = useContext(UserCtx);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [state, dispatch] = useContext(UserCtx);
 
   const navs = [
     { link: '/partai', text: 'Partai' },
     { link: '/paslon', text: 'Paslon' },
     { link: '/vote', text: 'Voting' },
   ];
+
+  const handleLogout = () => {
+    dispatch({
+      type: 'USER_LOGOUT',
+    });
+  };
 
   return (
     <>
@@ -43,8 +50,23 @@ export default function Nav() {
             ))}
 
             {state.isLogin ? (
-              <div className="bg-gray-300 px-4 py-1 flex items-center justify-center rounded-lg font-bold cursor-pointer ml-5">
-                {state.user.fullname.substring(0, 1)}
+              <div className="ml-5 bg-gray-300 w-fit relative rounded-lg">
+                <div
+                  className="px-10 py-1 flex items-center justify-center font-bold cursor-pointer uppercase"
+                  onClick={() => setShowDropdown(prev => !prev)}
+                >
+                  {state.user.username.substring(0, 1)}
+                </div>
+
+                {showDropdown && (
+                  <>
+                    <hr className="border border-black z-10 relative" />
+
+                    <div className="absolute -bottom-10 rounded-b-lg bg-gray-300 shadow border-x border-b w-full right-0 left-0 px-10 pt-5 pb-1 flex items-center justify-center font-bold cursor-pointer">
+                      <button onClick={handleLogout}>Logout</button>
+                    </div>
+                  </>
+                )}
               </div>
             ) : (
               <div

@@ -2,14 +2,13 @@ import { useContext, useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { UserCtx } from '../libs/Context';
 import { jwtDecode } from 'jwt-decode';
-import { User } from '../types/User';
 
 export default function PrivateRoute() {
   const [state, dispatch] = useContext(UserCtx);
 
   const authorizationUser = async (token: string) => {
     // check if token is valid
-    const res = await fetch('http://localhost:5000/api/v1/paslon', {
+    const res = await fetch('http://localhost:3000/api/v1/pemilu-news', {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -26,7 +25,7 @@ export default function PrivateRoute() {
       return;
     }
 
-    const decoded = jwtDecode<{ User: User; iat: number; exp: number }>(token);
+    const decoded = jwtDecode<{ userId: number; username: string; iat: number; exp: number }>(token);
 
     // login if token is valid
     dispatch({
@@ -34,9 +33,8 @@ export default function PrivateRoute() {
       payload: {
         isLogin: true,
         user: {
-          fullname: decoded.User.fullname,
-          id: decoded.User.id,
-          role: decoded.User.role,
+          username: decoded.username,
+          id: decoded.userId,
         },
         token,
       },

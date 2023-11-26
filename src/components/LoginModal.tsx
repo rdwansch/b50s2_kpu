@@ -1,7 +1,6 @@
 import { Dispatch, FormEvent, useContext, useState } from 'react';
 import { UserCtx } from '../libs/Context';
 import { jwtDecode } from 'jwt-decode';
-import { User } from '../types/User';
 
 interface Props {
   isOpen: boolean;
@@ -12,14 +11,15 @@ interface Props {
 export default function LoginModal({ isOpen, setIsOpen, setShowRegisterModal }: Props) {
   const [, dispatch] = useContext(UserCtx);
   const [user, setUser] = useState({
-    email: '',
+    username: '',
     password: '',
   });
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const res = await fetch('http://localhost:5000/api/v1/login', {
+    const res = await fetch('http://localhost:3000/api/v1/login', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -29,20 +29,26 @@ export default function LoginModal({ isOpen, setIsOpen, setShowRegisterModal }: 
     });
 
     const data = await res.json();
-    const decoded = jwtDecode<{ User: User; iat: number; exp: number }>(data);
+
+    if (res.status == 400) {
+      setErrorMessage(data.message);
+    }
+
+    const decoded = jwtDecode<{ userId: number; username: string; iat: number; exp: number }>(data.token);
 
     dispatch({
       type: 'USER_LOGIN',
       payload: {
         user: {
-          fullname: decoded.User.fullname,
-          id: decoded.User.id,
-          role: decoded.User.role,
+          username: decoded.username,
+          id: decoded.userId,
         },
-        token: data,
+        token: data.token,
         isLogin: true,
       },
     });
+
+    console.log(decoded);
 
     setIsOpen(false);
   };
@@ -60,15 +66,16 @@ export default function LoginModal({ isOpen, setIsOpen, setShowRegisterModal }: 
       >
         <form onSubmit={handleSubmit}>
           <h1 className="text-3xl font-bold text-center">LOGIN</h1>
+          <p className="text-sm text-red-500 text-center">*{errorMessage}</p>
           <div className="flex flex-col max-w-sm mx-auto mt-3">
             <label htmlFor="email" className="text-lg">
-              Email
+              Username
             </label>
             <input
-              type="email"
-              name="email"
-              id="email"
-              onChange={e => setUser({ ...user, email: e.target.value })}
+              type="text"
+              name="username"
+              id="username"
+              onChange={e => setUser({ ...user, username: e.target.value })}
               className="rounded-lg px-3 py-1 border-2 focus:outline-none focus:shadow focus:border-gray-300 transition"
             />
           </div>
